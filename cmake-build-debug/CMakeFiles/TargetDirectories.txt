@@ -1,3 +1,0 @@
-D:/ClionProjects/hse_numerical_methods_2024/cmake-build-debug/CMakeFiles/hse_numerical_methods_2024.dir
-D:/ClionProjects/hse_numerical_methods_2024/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/ClionProjects/hse_numerical_methods_2024/cmake-build-debug/CMakeFiles/rebuild_cache.dir
