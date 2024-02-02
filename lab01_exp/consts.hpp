@@ -6,34 +6,34 @@
 
 namespace ADAAI {
     template<typename F>
-    constexpr inline F ln2;
+    constexpr inline F c_Ln2;
 
     template<>
-    constexpr inline float ln2<float> = 1 / M_LOG2Ef;
+    constexpr inline float c_Ln2<float> = 1 / M_LOG2Ef;
     template<>
-    constexpr inline double ln2<double> = 1 / M_LOG2E;
+    constexpr inline double c_Ln2<double> = 1 / M_LOG2E;
     template<>
-    constexpr inline long double ln2<long double> = 1 / M_LOG2El;
-
-    template<typename F>
-    constexpr inline F eps = std::numeric_limits<F>::epsilon();
+    constexpr inline long double c_Ln2<long double> = 1 / M_LOG2El;
 
     template<typename F>
-    constexpr inline F sqrt2;
-    template<>
-    constexpr inline float sqrt2<float> = M_SQRT2f;
-    template<>
-    constexpr inline double sqrt2<double> = M_SQRT2;
-    template<>
-    constexpr inline long double sqrt2<long double> = M_SQRT2l;
+    constexpr inline F c_Eps = std::numeric_limits<F>::epsilon();
 
     template<typename F>
-    constexpr inline F inf;
+    constexpr inline F c_Sqrt2;
     template<>
-    constexpr inline float inf<float> = HUGE_VALF;
+    constexpr inline float c_Sqrt2<float> = M_SQRT2f;
     template<>
-    constexpr inline float inf<double> = HUGE_VAL;
+    constexpr inline double c_Sqrt2<double> = M_SQRT2;
     template<>
-    constexpr inline float inf<long double> = HUGE_VALL;
+    constexpr inline long double c_Sqrt2<long double> = M_SQRT2l;
+
+    template<typename F>
+    constexpr inline F c_Inf;
+    template<>
+    constexpr inline float c_Inf<float> = HUGE_VALF;
+    template<>
+    constexpr inline float c_Inf<double> = HUGE_VAL;
+    template<>
+    constexpr inline float c_Inf<long double> = HUGE_VALL;
 }
 #endif
