@@ -21,34 +21,31 @@ namespace ADAAI {
             return 0.0;
         if (y0 > INT_MAX)
             return c_Inf<F>;
-        F x0 = 0, x1;
+        F n = 0, x1;
         F y = x / c_Ln2<F>;
-        x1 = std::modf(y, &x0);
+        x1 = std::modf(y, &n);
         if (x1 > 0.5) {
-            x0++;
+            n++;
             x1--;
         } if (x1 < -0.5) {
-            x0--;
+            n--;
             x1++;
         }
-        if (x0 < INT_MIN)
+        if (n < INT_MIN)
             return 0.0;
-        if (x0 > INT_MAX)
+        if (n > INT_MAX)
             return c_Inf<F>;
         F x2 = x1 * c_Ln2<F>;
-        bool is_neg = false;
-        if (x2 < 0)
-            is_neg = true;
         F e_x1 = 0.0;
-        long long n = 1;
+        long long k = 1;
         F taylor_part = 1.0;
         F delta = 10.0 * c_Eps<F>;
         while (taylor_part * c_Sqrt2<F> >= delta) {
             e_x1 += taylor_part;
             taylor_part *= x2;
-            taylor_part /= ++n;
+            taylor_part /= ++k;
         }
-        F e_x = std::ldexp(e_x1, static_cast<int>(x0));
-        return is_neg ? 1/e_x : e_x;
+        F e_x = std::ldexp(e_x1, static_cast<int>(n));
+        return e_x;
     }
 }
