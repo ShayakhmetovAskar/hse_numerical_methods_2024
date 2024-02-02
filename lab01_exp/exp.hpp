@@ -1,15 +1,12 @@
-#ifndef ADAAI_CONSTS_HPP
-#define ADAAI_CONSTS_HPP
-
-#pragma once
+#ifndef ADAAI_EXP_HPP
+#define ADAAI_EXP_HPP
 
 #include <cmath>
-#include <limits>
-#include <type_traits>
+#include <climits>
 
 namespace ADAAI {
     template<typename F>
     constexpr F Exp(F x);
 
 } // namespace ADAAI
-#endif // ADAAI_CONSTS_HPP
+#endif // ADAAI_EXP_HPP

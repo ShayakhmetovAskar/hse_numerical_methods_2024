@@ -1,5 +1,9 @@
+#include <climits>
+#include <cmath>
+#include <type_traits>
 #include "exp.hpp"
 #include "consts.hpp"
+
 
 namespace ADAAI {
     template<typename F>
