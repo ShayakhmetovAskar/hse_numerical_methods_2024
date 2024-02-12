@@ -19,15 +19,6 @@ namespace ADAAI {
     constexpr inline F c_Eps = std::numeric_limits<F>::epsilon();
 
     template<typename F>
-    constexpr inline F c_Sqrt2;
-    template<>
-    constexpr inline float c_Sqrt2<float> = (float)M_SQRT2;
-    template<>
-    constexpr inline double c_Sqrt2<double> = M_SQRT2;
-    template<>
-    constexpr inline long double c_Sqrt2<long double> = (long double)M_SQRT2;
-
-    template<typename F>
     constexpr inline F c_Inf;
     template<>
     constexpr inline float c_Inf<float> = HUGE_VALF;

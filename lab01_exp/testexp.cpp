@@ -21,8 +21,8 @@ bool checker() {
     return error <= ADAAI::c_Eps<F> * 10;
 }
 
-int main() {
-    std::cout << checker<double>() << '\n';
-    std::cout << checker<float>() << '\n';
-    std::cout << checker<long double>() << '\n';
-}
+//int main() {
+//    std::cout << checker<double>() << '\n';
+//    std::cout << checker<float>() << '\n';
+//    std::cout << checker<long double>() << '\n';
+//}
