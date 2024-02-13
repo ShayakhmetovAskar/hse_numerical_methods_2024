@@ -6,7 +6,7 @@
 
 namespace ADAAI {
     template<typename F>
-    constexpr F Pade(F x);
+    constexpr F PadeExp(F x);
 
 } // namespace ADAAI
 #endif // ADAAI_PADE_HPP

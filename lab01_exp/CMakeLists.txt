@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
-project(hse_numerical_methods_2024)
+project(hse_numerical_methods_2024/lab01_exp)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(hse_numerical_methods_2024 testexp.cpp exp.cpp ../lab02_pade_exp/testpade.cpp)
+add_executable(hse_numerical_methods_2024 testexp.cpp exp.cpp)
