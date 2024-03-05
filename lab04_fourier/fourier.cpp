@@ -3,33 +3,32 @@
 #include <cmath>
 #include <gsl/gsl_integration.h>
 
-// Структура для передачи параметров в функцию f
+// Структура для передачи параметров в функции f_sin, f_cos
 struct params {
     int n;
 };
 
-// Функция для вычисления функции f(x) = e^x * cos(n*x) или e^x * sin(n*x)
-double f(double x, void* params) {
+double f(double x) {
     return std::exp(x);
 }
 
-double f_sin(double x, void* p) {
-    struct params* par = (struct params*)p;
+double f_sin(double x, void *p) {
+    struct params *par = (struct params *) p;
     int n = par->n;
 
-    return std::exp(x) * std::sin(n * x);
+    return f(x) * std::sin(n * x);
 }
 
-double f_cos(double x, void* p) {
-    struct params* par = (struct params*)p;
+double f_cos(double x, void *p) {
+    struct params *par = (struct params *) p;
     int n = par->n;
 
-    return std::exp(x) * std::cos(n * x);
+    return f(x) * std::cos(n * x);
 }
 
-// Функция для вычисления коэффициента a_n ряда Фурье
+// to calculate a_n
 double calculateFourierCoefficientA(int n) {
-    gsl_integration_workspace* w = gsl_integration_workspace_alloc(1000);
+    gsl_integration_workspace *w = gsl_integration_workspace_alloc(1000);
     gsl_function F;
     F.function = &f_cos; // if n = 0 then cos(nx)=1 so f_cos=f - that's what we need
     struct params p = {n};
@@ -40,9 +39,9 @@ double calculateFourierCoefficientA(int n) {
     return result / M_PI;
 }
 
-// Функция для вычисления коэффициента b_n ряда Фурье
+// to calculate b_n
 double calculateFourierCoefficientB(int n) {
-    gsl_integration_workspace* w = gsl_integration_workspace_alloc(1000);
+    gsl_integration_workspace *w = gsl_integration_workspace_alloc(1000);
     gsl_function F;
     F.function = &f_sin;
     struct params p = {n};
@@ -52,4 +51,3 @@ double calculateFourierCoefficientB(int n) {
     gsl_integration_workspace_free(w);
     return result / M_PI;
 }
-
