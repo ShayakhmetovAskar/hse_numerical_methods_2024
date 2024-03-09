@@ -18,6 +18,145 @@ enum class WhichDerivative : int {
     xy // d^2f/dxdy
 };
 
+class AAD22 {
+private: // TODO accessors
+    double m_val; // value of func or arg
+    double m_d1[2]; //df/dx, df/dy in some point (x,y) where value was computed
+    // to remember derivative
+    double m_d2[3]; //d^2f/dx^2, d^2f/dy^2, d^f/dxdy in the same point
+public:
+    AAD22() = delete; // makes no sense
+    // construct AAD22 from a const
+    constexpr AAD22(double c) :
+            m_val(c),
+            m_d1{0, 0},
+            m_d2{0, 0, 0} {};
+private:
+    constexpr AAD22(int i, double v) : // i = 0 for x, i = 1 for y
+            m_val(v),
+            m_d1{(i == 0) ? 1.0 : 0.0, (i == 0 ? 0.0 : 1.0)}, // maybe (i==1 ? 0.0 : 1.0) ???????
+            m_d2{0, 0, 0} {};
+public:
+    constexpr static AAD22 X(double v) {
+        return {0, v};
+    }
+
+    constexpr static AAD22 Y(double v) {
+        return {1, v};
+    }
+
+    // unary operator overloading
+    AAD22 &operator+() {
+        return *this;
+    }
+
+    AAD22 operator-() {
+        m_val = -m_val;
+        m_d1[0] = -m_d1[0];
+        m_d1[1] = -m_d1[1];
+        m_d2[0] = -m_d2[0];
+        m_d2[1] = -m_d2[1];
+        m_d2[2] = -m_d2[2];
+        return *this;
+    }
+
+    // binary operator overloading
+    AAD22 operator+(AAD22 const &right) {
+        AAD22 res = *this;
+        res.m_val += right.m_val;
+        res.m_d1[0] += right.m_d1[0];
+        res.m_d1[1] += right.m_d1[1];
+        res.m_d2[0] += right.m_d2[0];
+        res.m_d2[1] += right.m_d2[1];
+        res.m_d2[2] += right.m_d2[2];
+        return res;
+    }
+
+    AAD22 operator-(AAD22 const &right) {
+        AAD22 res = *this;
+        res.m_val -= right.m_val;
+        res.m_d1[0] -= right.m_d1[0];
+        res.m_d1[1] -= right.m_d1[1];
+        res.m_d2[0] -= right.m_d2[0];
+        res.m_d2[1] -= right.m_d2[1];
+        res.m_d2[2] -= right.m_d2[2];
+        return res;
+    }
+
+    AAD22 operator*(AAD22 const &right) {
+        AAD22 res = *this;
+        res.m_val *= right.m_val;
+        res.m_d1[0] = right.m_val * (*this).m_d1[0] + (*this).m_val * right.m_d1[0];
+        res.m_d1[1] = right.m_val * (*this).m_d1[1] + (*this).m_val * right.m_d1[1];
+        // (fg)''=f''g+2f'g'+fg''
+        // TODO m_d2[i]
+        return res;
+    }
+
+    AAD22 operator/(AAD22 const &right) {
+        AAD22 res = *this;
+        res.m_val /= right.m_val;
+        res.m_d1[0] = ((*this).m_d1[0] * right.m_val - (*this).m_val * right.m_d1[0]) / (right.m_val * right.m_val);
+        res.m_d1[1] = ((*this).m_d1[1] * right.m_val - (*this).m_val * right.m_d1[1]) / (right.m_val * right.m_val);
+        // TODO m_d2[i]
+        return res;
+    }
+
+    AAD22 operator+=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res + right;
+        return res;
+    }
+
+    AAD22 operator-=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res - right;
+        return res;
+    }
+
+    AAD22 operator*=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res * right;
+        return res;
+    }
+
+    AAD22 operator/=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res / right;
+        return res;
+    }
+
+    AAD22 sin(AAD22 &elem) { // TODO needs a check
+        elem.m_val = std::sin(m_val);
+        elem.m_d1[0] = std::cos(elem.m_val) * elem.m_d1[0];
+        elem.m_d1[1] = std::cos(elem.m_val) * elem.m_d1[1];
+        elem.m_d2[0] = - std::sin(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
+        elem.m_d2[1] = - std::sin(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
+        elem.m_d2[2] = - std::sin(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
+        return elem;
+    }
+
+    AAD22 cos(AAD22 &elem) { // TODO needs a check
+        elem.m_val = std::cos(m_val);
+        elem.m_d1[0] = - std::sin(elem.m_val) * elem.m_d1[0];
+        elem.m_d1[1] = - std::sin(elem.m_val) * elem.m_d1[1];
+        elem.m_d2[0] = - std::cos(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
+        elem.m_d2[1] = - std::cos(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
+        elem.m_d2[2] = - std::cos(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
+        return elem;
+    }
+
+    AAD22 exp(AAD22 &elem) { // TODO needs a check
+        elem.m_val = std::cos(m_val);
+        elem.m_d1[0] = std::exp(elem.m_val) * elem.m_d1[0];
+        elem.m_d1[1] = std::exp(elem.m_val) * elem.m_d1[1];
+        elem.m_d2[0] = std::exp(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
+        elem.m_d2[1] = std::exp(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
+        elem.m_d2[2] = std::exp(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
+        return elem;
+    }
+};
+
 template<WhichDerivative W, DiffMethod M, typename Callable>
 double Differentiator(Callable const &F, double x, double y) {
     double h_x, h_y;
@@ -133,6 +272,9 @@ double Differentiator(Callable const &F, double x, double y) {
             return df2_dxdy;
         }
     } else if constexpr (M == DiffMethod::FwdAAD) {
-        // TODO
+        AAD22 X = AAD22::X(x);
+        AAD22 Y = AAD22::Y(y);
+        AAD22 Res = F(X, Y); // F - our callable
+        // Call the corresponding accessor depending on the whichD template arg
     }
 }
