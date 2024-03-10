@@ -44,7 +44,7 @@ namespace ADAAI {
                 m_val(c),
                 m_d1{0, 0},
                 m_d2{0, 0, 0} {};
-    private:
+    public:
         constexpr AAD22(int i, double v) : // i = 0 for x, i = 1 for y
                 m_val(v),
                 m_d1{(i == 0) ? 1.0 : 0.0, (i == 0 ? 0.0 : 1.0)},
@@ -155,37 +155,36 @@ namespace ADAAI {
             res = res / right;
             return res;
         }
+        AAD22 sin(AAD22 &elem) { // TODO needs a check
+            elem.m_val = std::sin(elem.m_val);
+            elem.m_d1[0] = std::cos(elem.m_val) * elem.m_d1[0];
+            elem.m_d1[1] = std::cos(elem.m_val) * elem.m_d1[1];
+            elem.m_d2[0] = -std::sin(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
+            elem.m_d2[1] = -std::sin(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
+            elem.m_d2[2] = -std::sin(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
+            return elem;
+        }
+
+        AAD22 cos(AAD22 &elem) { // TODO needs a check
+            elem.m_val = std::cos(elem.m_val);
+            elem.m_d1[0] = -std::sin(elem.m_val) * elem.m_d1[0];
+            elem.m_d1[1] = -std::sin(elem.m_val) * elem.m_d1[1];
+            elem.m_d2[0] = -std::cos(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
+            elem.m_d2[1] = -std::cos(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
+            elem.m_d2[2] = -std::cos(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
+            return elem;
+        }
+
+        AAD22 exp(AAD22 &elem) { // TODO needs a check
+            elem.m_val = std::exp(elem.m_val);
+            elem.m_d1[0] = std::exp(elem.m_val) * elem.m_d1[0];
+            elem.m_d1[1] = std::exp(elem.m_val) * elem.m_d1[1];
+            elem.m_d2[0] = std::exp(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
+            elem.m_d2[1] = std::exp(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
+            elem.m_d2[2] = std::exp(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
+            return elem;
+        }
     };
-
-    AAD22 sin(AAD22 &elem) { // TODO needs a check
-        elem.m_val = std::sin(elem.m_val);
-        elem.m_d1[0] = std::cos(elem.m_val) * elem.m_d1[0];
-        elem.m_d1[1] = std::cos(elem.m_val) * elem.m_d1[1];
-        elem.m_d2[0] = -std::sin(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
-        elem.m_d2[1] = -std::sin(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
-        elem.m_d2[2] = -std::sin(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
-        return elem;
-    }
-
-    AAD22 cos(AAD22 &elem) { // TODO needs a check
-        elem.m_val = std::cos(elem.m_val);
-        elem.m_d1[0] = -std::sin(elem.m_val) * elem.m_d1[0];
-        elem.m_d1[1] = -std::sin(elem.m_val) * elem.m_d1[1];
-        elem.m_d2[0] = -std::cos(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
-        elem.m_d2[1] = -std::cos(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
-        elem.m_d2[2] = -std::cos(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
-        return elem;
-    }
-
-    AAD22 exp(AAD22 &elem) { // TODO needs a check
-        elem.m_val = std::exp(elem.m_val);
-        elem.m_d1[0] = std::exp(elem.m_val) * elem.m_d1[0];
-        elem.m_d1[1] = std::exp(elem.m_val) * elem.m_d1[1];
-        elem.m_d2[0] = std::exp(elem.m_val) * elem.m_d1[0] * elem.m_d1[0];
-        elem.m_d2[1] = std::exp(elem.m_val) * elem.m_d1[1] * elem.m_d1[1];
-        elem.m_d2[2] = std::exp(elem.m_val) * elem.m_d1[0] * elem.m_d1[1];
-        return elem;
-    }
 
     template<WhichDerivative W, DiffMethod M, typename Callable>
     double Differentiator(Callable const &F, double x, double y) {
