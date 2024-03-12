@@ -3,22 +3,21 @@
 #include "differentiation.cpp"
 
 double func(double x, double y) {
-//    return std::sin(x * y) + std::exp(3 * x) * std::cos(y / x);
+    return 2 * std::sin(y * y) + x * y + std::exp(x / y);
 //    return 2 * x * std::sin(y) + x;
-//    return 2 * std::sin(y) + x * y;
-    return x * y * 2 + x * x;
+//    return std::cos(y);
+//    return x * y * 2 + x * x;
 }
 
 int main() {
-//    double x = 2.0763142;
-//    double y = -0.07765;
     double x = 2.0;
     double y = 3.0;
     ADAAI::AAD22 z(0, x);
     ADAAI::AAD22 w(1, y);
-//    ADAAI::AAD22 v = ADAAI::AAD22(2.0) * w.sin(w) + z * w;
-//    ADAAI::AAD22 v = ADAAI::AAD22(2.0) * z * w.sin(w) + z;
-    ADAAI::AAD22 v = ADAAI::AAD22(2.0) * z * w + z * z;
+    ADAAI::AAD22 v = ADAAI::AAD22(2.0) * sin(w * w) + z * w + exp(z / w);
+//    ADAAI::AAD22 v = ADAAI::AAD22(2.0) * z * sin(w) + z;
+//    ADAAI::AAD22 v = cos(w);
+//    ADAAI::AAD22 v = ADAAI::AAD22(2.0) * z * w + z * z;
     long double result;
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::x, ADAAI::DiffMethod::stencil3>(&func, x, y);
     std::cout << "df/dx using stencil3: " << result << '\n';
@@ -73,8 +72,5 @@ int main() {
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::xy, ADAAI::DiffMethod::stencil5Extra>(&func, x, y);
     std::cout << "d^2f/dxdy using stencil5Extra: " << result << '\n';
     std::cout << "d^2f/dxdy using FwdAAD: " << v.m_d2[2] << '\n';
-
-
     return 0;
-
 }
