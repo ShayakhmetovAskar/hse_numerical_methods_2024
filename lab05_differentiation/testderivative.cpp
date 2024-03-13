@@ -27,7 +27,7 @@ int main() {
     std::cout << "df/dx using stencil5: " << result << '\n';
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::x, ADAAI::DiffMethod::stencil5Extra>(&func, x, y);
     std::cout << "df/dx using stencil5Extra: " << result << '\n';
-    std::cout << "df/dx using FwdAAD: " << v.m_d1[0] << '\n';
+    std::cout << "df/dx using FwdAAD: " << v.get_d1()[0] << '\n';
     std::cout << '\n';
 
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::y, ADAAI::DiffMethod::stencil3>(&func, x, y);
@@ -38,7 +38,7 @@ int main() {
     std::cout << "df/dy using stencil5: " << result << '\n';
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::y, ADAAI::DiffMethod::stencil5Extra>(&func, x, y);
     std::cout << "df/dy using stencil5Extra: " << result << '\n';
-    std::cout << "df/dy using FwdAAD: " << v.m_d1[1] << '\n';
+    std::cout << "df/dy using FwdAAD: " << v.get_d1()[1] << '\n';
     std::cout << '\n';
 
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::xx, ADAAI::DiffMethod::stencil3>(&func, x, y);
@@ -49,7 +49,7 @@ int main() {
     std::cout << "d^2f/(dx)^2 using stencil5: " << result << '\n';
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::xx, ADAAI::DiffMethod::stencil5Extra>(&func, x, y);
     std::cout << "d^2f/(dx)^2 using stencil5Extra: " << result << '\n';
-    std::cout << "d^2f/(dx)^2 using FwdAAD: " << v.m_d2[0] << '\n';
+    std::cout << "d^2f/(dx)^2 using FwdAAD: " << v.get_d2()[0] << '\n';
     std::cout << '\n';
 
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::yy, ADAAI::DiffMethod::stencil3>(&func, x, y);
@@ -60,7 +60,7 @@ int main() {
     std::cout << "d^2f/(dy)^2 using stencil5: " << result << '\n';
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::yy, ADAAI::DiffMethod::stencil5Extra>(&func, x, y);
     std::cout << "d^2f/(dy)^2 using stencil5Extra: " << result << '\n';
-    std::cout << "d^2f/(dy)^2 using FwdAAD: " << v.m_d2[1] << '\n';
+    std::cout << "d^2f/(dy)^2 using FwdAAD: " << v.get_d2()[1] << '\n';
     std::cout << '\n';
 
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::xy, ADAAI::DiffMethod::stencil3>(&func, x, y);
@@ -71,6 +71,6 @@ int main() {
     std::cout << "d^2f/dxdy using stencil5: " << result << '\n';
     result = ADAAI::Differentiator<ADAAI::WhichDerivative::xy, ADAAI::DiffMethod::stencil5Extra>(&func, x, y);
     std::cout << "d^2f/dxdy using stencil5Extra: " << result << '\n';
-    std::cout << "d^2f/dxdy using FwdAAD: " << v.m_d2[2] << '\n';
+    std::cout << "d^2f/dxdy using FwdAAD: " << v.get_d2()[2] << '\n';
     return 0;
 }

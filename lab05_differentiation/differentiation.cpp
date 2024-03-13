@@ -2,173 +2,178 @@
 #include <cmath>
 
 namespace ADAAI {
+    double AAD22::get_val() const { return m_val; }
 
-    class AAD22 {
+    void AAD22::set_val(double val) { m_val = val; }
 
-    public:
-        double m_val; // value of func or arg
-        double m_d1[2]; //df/dx, df/dy in some point (x,y) where value was computed
-        // to remember derivative
-        double m_d2[3]; //d^2f/dx^2, d^2f/dy^2, d^f/dxdy in the same point
-    public:
-        AAD22() = delete; // makes no sense
-        // construct AAD22 from a const
-        constexpr AAD22(double c) :
-                m_val(c),
-                m_d1{0, 0},
-                m_d2{0, 0, 0} {};
-    public:
-        constexpr AAD22(int i, double v) : // i = 0 for x, i = 1 for y
-                m_val(v),
-                m_d1{(i == 0) ? 1.0 : 0.0, (i == 0 ? 0.0 : 1.0)},
-                m_d2{0, 0, 0} {};
-    public:
-        constexpr static AAD22 X(double v) {
-            return {0, v};
-        }
+    const double *AAD22::get_d1() const { return m_d1; }
 
-        constexpr static AAD22 Y(double v) {
-            return {1, v};
-        }
+    void AAD22::set_d1(double d1x, double d1y) {
+        m_d1[0] = d1x;
+        m_d1[1] = d1y;
+    }
 
-        // unary operator overloading
-        AAD22 &operator+() {
-            return *this;
-        }
+    const double *AAD22::get_d2() const { return m_d2; }
 
-        AAD22 operator-() {
-            m_val = -m_val;
-            m_d1[0] = -m_d1[0];
-            m_d1[1] = -m_d1[1];
-            m_d2[0] = -m_d2[0];
-            m_d2[1] = -m_d2[1];
-            m_d2[2] = -m_d2[2];
-            return *this;
-        }
+    void AAD22::set_d2(double d2xx, double d2yy, double d2xy) {
+        m_d2[0] = d2xx;
+        m_d2[1] = d2yy;
+        m_d2[2] = d2xy;
+    }
 
-        // binary operator overloading
-        AAD22 operator+(const AAD22 &right) {
-            AAD22 res = *this;
-            res.m_val += right.m_val;
-            res.m_d1[0] += right.m_d1[0];
-            res.m_d1[1] += right.m_d1[1];
-            res.m_d2[0] += right.m_d2[0];
-            res.m_d2[1] += right.m_d2[1];
-            res.m_d2[2] += right.m_d2[2];
-            return res;
-        }
+    // construct AAD22 from a const
+    constexpr AAD22::AAD22(double c) :
+            m_val(c),
+            m_d1{0, 0},
+            m_d2{0, 0, 0} {}
 
-        AAD22 operator-(const AAD22 &right) {
-            AAD22 res = *this;
-            res.m_val -= right.m_val;
-            res.m_d1[0] -= right.m_d1[0];
-            res.m_d1[1] -= right.m_d1[1];
-            res.m_d2[0] -= right.m_d2[0];
-            res.m_d2[1] -= right.m_d2[1];
-            res.m_d2[2] -= right.m_d2[2];
-            return res;
-        }
+    constexpr AAD22::AAD22(int i, double v) : // i = 0 for x, i = 1 for y
+            m_val(v),
+            m_d1{(i == 0) ? 1.0 : 0.0, (i == 0 ? 0.0 : 1.0)},
+            m_d2{0, 0, 0} {}
 
-        AAD22 operator*(const AAD22 &right) {
-            AAD22 res = *this;
-            res.m_val *= right.m_val;
-            res.m_d1[0] = right.m_val * this->m_d1[0] + this->m_val * right.m_d1[0]; //(uv)'=u'v+v'u
-            res.m_d1[1] = right.m_val * this->m_d1[1] + this->m_val * right.m_d1[1];
-            res.m_d2[0] = this->m_d2[0] * right.m_val + 2 * this->m_d1[0] * right.m_d1[0] + this->m_val * right.m_d2[0];
-            res.m_d2[1] = this->m_d2[1] * right.m_val + 2 * this->m_d1[1] * right.m_d1[1] + this->m_val * right.m_d2[1];
-            res.m_d2[2] = this->m_d2[2] * right.m_val + this->m_d1[0] * right.m_d1[1] + this->m_val * right.m_d2[2];
-            // (fg)''=f''g+2f'g'+fg''
-            return res;
-            // [v1, d1, d2] * [v2, g1, g2]
-            // [v1*v2, d1v2 + g1v1, d2v2 + g2v1]
-        }
+    constexpr AAD22 AAD22::X(double v) {
+        return {0, v};
+    }
 
-        AAD22 operator/(const AAD22 &right) {
-            AAD22 res = *this;
-            res.m_val /= right.m_val;
-            res.m_d1[0] = (this->m_d1[0] * right.m_val - this->m_val * right.m_d1[0]) / (right.m_val * right.m_val);
-            res.m_d1[1] = (this->m_d1[1] * right.m_val - this->m_val * right.m_d1[1]) / (right.m_val * right.m_val);
-            res.m_d2[0] =
-                    (this->m_d2[0] * right.m_val - 2 * this->m_d1[0] * right.m_d1[0] - this->m_val * right.m_d2[0]) /
-                    (right.m_val *
-                     right.m_val);
-            res.m_d2[1] =
-                    (this->m_d2[1] * right.m_val - 2 * this->m_d1[1] * right.m_d1[1] - this->m_val * right.m_d2[1]) /
-                    (right.m_val *
-                     right.m_val);;
-            res.m_d2[2] =
-                    (this->m_d2[2] * right.m_val - this->m_d1[0] * right.m_d1[1] - this->m_val * right.m_d2[2]) /
-                    (right.m_val *
-                     right.m_val);
-            return res;
-        }
+    constexpr AAD22 AAD22::Y(double v) {
+        return {1, v};
+    }
 
-        AAD22 operator+=(AAD22 const &right) {
-            AAD22 res = *this;
-            res = res + right;
-            return res;
-        }
+    // unary operator overloading
+    AAD22 &AAD22::operator+() {
+        return *this;
+    }
 
-        AAD22 operator-=(AAD22 const &right) {
-            AAD22 res = *this;
-            res = res - right;
-            return res;
-        }
+    AAD22 AAD22::operator-() {
+        m_val = -m_val;
+        m_d1[0] = -m_d1[0];
+        m_d1[1] = -m_d1[1];
+        m_d2[0] = -m_d2[0];
+        m_d2[1] = -m_d2[1];
+        m_d2[2] = -m_d2[2];
+        return *this;
+    }
 
-        AAD22 operator*=(AAD22 const &right) {
-            AAD22 res = *this;
-            res = res * right;
-            return res;
-        }
+    // binary operator overloading
+    AAD22 AAD22::operator+(const AAD22 &right) {
+        AAD22 res = *this;
+        res.m_val += right.m_val;
+        res.m_d1[0] += right.m_d1[0];
+        res.m_d1[1] += right.m_d1[1];
+        res.m_d2[0] += right.m_d2[0];
+        res.m_d2[1] += right.m_d2[1];
+        res.m_d2[2] += right.m_d2[2];
+        return res;
+    }
 
-        AAD22 operator/=(AAD22 const &right) {
-            AAD22 res = *this;
-            res = res / right;
-            return res;
-        }
+    AAD22 AAD22::operator-(const AAD22 &right) {
+        AAD22 res = *this;
+        res.m_val -= right.m_val;
+        res.m_d1[0] -= right.m_d1[0];
+        res.m_d1[1] -= right.m_d1[1];
+        res.m_d2[0] -= right.m_d2[0];
+        res.m_d2[1] -= right.m_d2[1];
+        res.m_d2[2] -= right.m_d2[2];
+        return res;
+    }
 
-        AAD22 sin() const {
-            AAD22 elem = *this;
-            elem.m_val = std::sin(this->m_val);
-            elem.m_d1[0] = std::cos(this->m_val) * this->m_d1[0];
-            elem.m_d1[1] = std::cos(this->m_val) * this->m_d1[1];
-            elem.m_d2[0] =
-                    std::cos(this->m_val) * this->m_d2[0] - std::sin(this->m_val) * this->m_d1[0] * this->m_d1[0];
-            elem.m_d2[1] =
-                    std::cos(this->m_val) * this->m_d2[1] - std::sin(this->m_val) * this->m_d1[1] * this->m_d1[1];
-            elem.m_d2[2] =
-                    -std::sin(this->m_val) * this->m_d1[0] * this->m_d1[1] + std::cos(this->m_val) * this->m_d2[2];
-            return elem;
-        }
+    AAD22 AAD22::operator*(const AAD22 &right) {
+        AAD22 res = *this;
+        res.m_val *= right.m_val;
+        res.m_d1[0] = right.m_val * this->m_d1[0] + this->m_val * right.m_d1[0]; //(uv)'=u'v+v'u
+        res.m_d1[1] = right.m_val * this->m_d1[1] + this->m_val * right.m_d1[1];
+        res.m_d2[0] = this->m_d2[0] * right.m_val + 2 * this->m_d1[0] * right.m_d1[0] + this->m_val * right.m_d2[0];
+        res.m_d2[1] = this->m_d2[1] * right.m_val + 2 * this->m_d1[1] * right.m_d1[1] + this->m_val * right.m_d2[1];
+        res.m_d2[2] = this->m_d2[2] * right.m_val + this->m_d1[0] * right.m_d1[1] + this->m_val * right.m_d2[2];
+        // (fg)''=f''g+2f'g'+fg''
+        return res;
+        // [v1, d1, d2] * [v2, g1, g2]
+        // [v1*v2, d1v2 + g1v1, d2v2 + g2v1]
+    }
 
-        AAD22 cos() const {
-            AAD22 elem = *this;
-            elem.m_val = std::cos(this->m_val);
-            elem.m_d1[0] = -std::sin(this->m_val) * this->m_d1[0];
-            elem.m_d1[1] = -std::sin(this->m_val) * this->m_d1[1];
-            elem.m_d2[0] = -std::cos(this->m_val) * this->m_d1[0] * this->m_d1[0] -
-                           this->m_d2[0] * this->m_d2[0] * std::sin(this->m_val);
-            elem.m_d2[1] = -std::cos(this->m_val) * this->m_d1[1] * this->m_d1[1] -
-                           this->m_d2[1] * this->m_d2[1] * std::sin(this->m_val);
-            elem.m_d2[2] =
-                    -std::cos(this->m_val) * this->m_d1[0] * this->m_d1[1] - this->m_d2[2] * std::sin(this->m_val);
-            return elem;
-        }
+    AAD22 AAD22::operator/(const AAD22 &right) {
+        AAD22 res = *this;
+        res.m_val /= right.m_val;
+        res.m_d1[0] = (this->m_d1[0] * right.m_val - this->m_val * right.m_d1[0]) / (right.m_val * right.m_val);
+        res.m_d1[1] = (this->m_d1[1] * right.m_val - this->m_val * right.m_d1[1]) / (right.m_val * right.m_val);
+        res.m_d2[0] =
+                (this->m_d2[0] * right.m_val - 2 * this->m_d1[0] * right.m_d1[0] - this->m_val * right.m_d2[0]) /
+                (right.m_val * right.m_val);
+        res.m_d2[1] =
+                (this->m_d2[1] * right.m_val - 2 * this->m_d1[1] * right.m_d1[1] - this->m_val * right.m_d2[1]) /
+                (right.m_val * right.m_val);
+        res.m_d2[2] =
+                (this->m_d2[2] * right.m_val - this->m_d1[0] * right.m_d1[1] - this->m_val * right.m_d2[2]) /
+                (right.m_val * right.m_val);
+        return res;
+    }
 
-        AAD22 exp() const {
-            AAD22 elem = *this;
-            elem.m_val = std::exp(this->m_val);
-            elem.m_d1[0] = std::exp(this->m_val) * this->m_d1[0];
-            elem.m_d1[1] = std::exp(this->m_val) * this->m_d1[1];
-            elem.m_d2[0] =
-                    std::exp(this->m_val) * this->m_d1[0] * this->m_d1[0] + std::exp(this->m_val) * this->m_d2[0];
-            elem.m_d2[1] =
-                    std::exp(this->m_val) * this->m_d1[1] * this->m_d1[1] + std::exp(this->m_val) * this->m_d2[1];
-            elem.m_d2[2] =
-                    std::exp(this->m_val) * this->m_d1[0] * this->m_d1[1] + std::exp(this->m_val) * this->m_d2[2];
-            return elem;
-        }
-    };
+    AAD22 AAD22::operator+=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res + right;
+        return res;
+    }
+
+    AAD22 AAD22::operator-=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res - right;
+        return res;
+    }
+
+    AAD22 AAD22::operator*=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res * right;
+        return res;
+    }
+
+    AAD22 AAD22::operator/=(AAD22 const &right) {
+        AAD22 res = *this;
+        res = res / right;
+        return res;
+    }
+
+    AAD22 AAD22::sin() const {
+        AAD22 elem = *this;
+        elem.m_val = std::sin(this->m_val);
+        elem.m_d1[0] = std::cos(this->m_val) * this->m_d1[0];
+        elem.m_d1[1] = std::cos(this->m_val) * this->m_d1[1];
+        elem.m_d2[0] =
+                std::cos(this->m_val) * this->m_d2[0] - std::sin(this->m_val) * this->m_d1[0] * this->m_d1[0];
+        elem.m_d2[1] =
+                std::cos(this->m_val) * this->m_d2[1] - std::sin(this->m_val) * this->m_d1[1] * this->m_d1[1];
+        elem.m_d2[2] =
+                -std::sin(this->m_val) * this->m_d1[0] * this->m_d1[1] + std::cos(this->m_val) * this->m_d2[2];
+        return elem;
+    }
+
+    AAD22 AAD22::cos() const {
+        AAD22 elem = *this;
+        elem.m_val = std::cos(this->m_val);
+        elem.m_d1[0] = -std::sin(this->m_val) * this->m_d1[0];
+        elem.m_d1[1] = -std::sin(this->m_val) * this->m_d1[1];
+        elem.m_d2[0] = -std::cos(this->m_val) * this->m_d1[0] * this->m_d1[0] -
+                       this->m_d2[0] * this->m_d2[0] * std::sin(this->m_val);
+        elem.m_d2[1] = -std::cos(this->m_val) * this->m_d1[1] * this->m_d1[1] -
+                       this->m_d2[1] * this->m_d2[1] * std::sin(this->m_val);
+        elem.m_d2[2] =
+                -std::cos(this->m_val) * this->m_d1[0] * this->m_d1[1] - this->m_d2[2] * std::sin(this->m_val);
+        return elem;
+    }
+
+    AAD22 AAD22::exp() const {
+        AAD22 elem = *this;
+        elem.m_val = std::exp(this->m_val);
+        elem.m_d1[0] = std::exp(this->m_val) * this->m_d1[0];
+        elem.m_d1[1] = std::exp(this->m_val) * this->m_d1[1];
+        elem.m_d2[0] =
+                std::exp(this->m_val) * this->m_d1[0] * this->m_d1[0] + std::exp(this->m_val) * this->m_d2[0];
+        elem.m_d2[1] =
+                std::exp(this->m_val) * this->m_d1[1] * this->m_d1[1] + std::exp(this->m_val) * this->m_d2[1];
+        elem.m_d2[2] =
+                std::exp(this->m_val) * this->m_d1[0] * this->m_d1[1] + std::exp(this->m_val) * this->m_d2[2];
+        return elem;
+    }
 
     AAD22 sin(AAD22 const &v) {
         return v.sin();
@@ -186,15 +191,15 @@ namespace ADAAI {
     double Differentiator(Callable const &F, double x, double y) {
         double h_x, h_y;
         int n = 2; // can be changed to any integer > 2 - is used to make mistake smaller
-        if (abs(x) < 1) {
+        if (std::abs(x) < 1) {
             h_x = 1e-4;
         } else {
-            h_x = abs(x) * 1e-4;
+            h_x = std::abs(x) * 1e-4;
         }
-        if (abs(y) < 1) {
+        if (std::abs(y) < 1) {
             h_y = 1e-4;
         } else {
-            h_y = abs(y) * 1e-4;
+            h_y = std::abs(y) * 1e-4;
         }
         if (M == DiffMethod::stencil3) {
             if constexpr (W == WhichDerivative::x) {
@@ -310,15 +315,15 @@ namespace ADAAI {
             AAD22 Res = F(X, Y); // F - our callable
             // Call the corresponding accessor depending on the WhichDerivative template arg
             if (W == WhichDerivative::x) {
-                return Res.m_d1[0];
+                return Res.get_d1()[0];
             } else if (W == WhichDerivative::y) {
-                return Res.m_d1[1];
+                return Res.get_d1()[1];
             } else if (W == WhichDerivative::xx) {
-                return Res.m_d2[0];
+                return Res.get_d2()[0];
             } else if (W == WhichDerivative::yy) {
-                return Res.m_d2[1];
+                return Res.get_d2()[1];
             } else if (W == WhichDerivative::xy) {
-                return Res.m_d2[2];
+                return Res.get_d2()[2];
             }
         }
     }
