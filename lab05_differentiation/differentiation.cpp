@@ -2,25 +2,10 @@
 #include <cmath>
 
 namespace ADAAI {
-    enum class DiffMethod : int {
-        stencil3,
-        stencil3Extra,
-        stencil5,
-        stencil5Extra,
-        FwdAAD
-    };
-
-    enum class WhichDerivative : int {
-        x, // df/dx
-        y, // df/dy
-        xx, // d^2f/(dx)^2
-        yy, // d^2f/(dy)^2
-        xy // d^2f/dxdy
-    };
 
     class AAD22 {
 
-    public: // TODO accessors
+    public:
         double m_val; // value of func or arg
         double m_d1[2]; //df/dx, df/dy in some point (x,y) where value was computed
         // to remember derivative
@@ -93,7 +78,6 @@ namespace ADAAI {
             res.m_d2[1] = this->m_d2[1] * right.m_val + 2 * this->m_d1[1] * right.m_d1[1] + this->m_val * right.m_d2[1];
             res.m_d2[2] = this->m_d2[2] * right.m_val + this->m_d1[0] * right.m_d1[1] + this->m_val * right.m_d2[2];
             // (fg)''=f''g+2f'g'+fg''
-            // TODO needs a check
             return res;
             // [v1, d1, d2] * [v2, g1, g2]
             // [v1*v2, d1v2 + g1v1, d2v2 + g2v1]
@@ -115,8 +99,7 @@ namespace ADAAI {
             res.m_d2[2] =
                     (this->m_d2[2] * right.m_val - this->m_d1[0] * right.m_d1[1] - this->m_val * right.m_d2[2]) /
                     (right.m_val *
-                     right.m_val);;
-            // TODO needs a check
+                     right.m_val);
             return res;
         }
 
@@ -326,7 +309,6 @@ namespace ADAAI {
             AAD22 Y = AAD22::Y(y);
             AAD22 Res = F(X, Y); // F - our callable
             // Call the corresponding accessor depending on the WhichDerivative template arg
-            // TODO
             if (W == WhichDerivative::x) {
                 return Res.m_d1[0];
             } else if (W == WhichDerivative::y) {
