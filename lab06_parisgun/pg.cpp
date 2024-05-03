@@ -13,8 +13,8 @@ namespace ADAAI {
         if (v_M < speed[0]){
             return c_d[0];
         }
-        else if (v_M > speed[12]){
-            return c_d[12];
+        else if (v_M > speed[n - 1]){
+            return c_d[n - 1];
         }
         else {
             for (int i = 0; i < n - 1; ++i) {
