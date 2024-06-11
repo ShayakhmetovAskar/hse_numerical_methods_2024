@@ -7,4 +7,4 @@ double f_cos(double x, void *p);
 double calculateFourierCoefficientA(int n);
 double calculateFourierCoefficientB(int n);
 
-#endif //ADAAI_FOURIER_HPP
+#endif // ADAAI_FOURIER_HPP
