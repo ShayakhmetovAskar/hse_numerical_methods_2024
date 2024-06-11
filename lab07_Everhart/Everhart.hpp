@@ -15,7 +15,7 @@ namespace ADAAI {
 
     double lagrange_basis_derivative(const std::array<double, ADAAI::N> &times, size_t i, double t);
 
-    std::array<double, ADAAI::N> compute_taylor_coefficients(const State& state);
+    std::array<double, ADAAI::N> compute_coefficients(const State& state);
 
     State interpolate(const std::array<State, ADAAI::N>& states, const std::array<double, ADAAI::N>& times, double t);
 

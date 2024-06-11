@@ -97,7 +97,7 @@ int main() {
 
     for (int step = 0; step < 100; ++step) {
         ADAAI::State current_state = states[ADAAI::N - 1];
-        auto coeffs = compute_coefficients(current_state);
+        auto coeffs = ADAAI::compute_coefficients(current_state);
         ADAAI::State new_state = evolve_state(current_state, coeffs, ADAAI::dt);
 
         for (size_t i = 0; i < ADAAI::N - 1; ++i) {
